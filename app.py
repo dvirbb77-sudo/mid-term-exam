@@ -66,3 +66,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#### I had the strange issue where if you switch out of main when it's empty the brnach is erased (ubuntu 24.4) so fabricating the pull request by deleting the comment#####
+
