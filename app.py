@@ -1,4 +1,5 @@
 import os
+import sys
 import socket
 from flask import Flask, jsonify, render_template_string, redirect, request
 
@@ -7,9 +8,6 @@ app = Flask(__name__)
 PORT = int(os.environ.get("PORT", 5000))
 VERSION = os.environ.get("VERSION", "1.0.0")
 API_KEY = os.environ.get("API_KEY")
-
-if not API_KEY:
-    raise RuntimeError("API_KEY is mandatory and must be set in the environment variables")
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -31,28 +29,40 @@ HTML_TEMPLATE = """
 </html>
 """
 
-@app.route('/')
+
+@app.route("/")
 def index():
     return render_template_string(HTML_TEMPLATE)
 
-@app.route('/api/status')
+
+@app.route("/api/status")
 def status_redirect():
-    return redirect('/api/v1/status', code=302)
+    return redirect("/api/v1/status", code=302)
 
-@app.route('/api/v1/status')
+
+@app.route("/api/v1/status")
 def status_v1():
-    return jsonify({
-        "status": "ok",
-        "hostname": socket.gethostname(),
-        "version": VERSION
-    })
+    return jsonify(
+        {"status": "ok", "hostname": socket.gethostname(), "version": VERSION}
+    )
 
-@app.route('/api/v1/secret')
+
+@app.route("/api/v1/secret")
 def secret():
     key = request.headers.get("X-API-Key")
-    if key != API_KEY:
+    # Explicit check for security routes
+    if not key or key != API_KEY:
         return jsonify({"error": "Unauthorized"}), 401
     return jsonify({"message": "you found the secret"})
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT)
+
+def main():
+    """Entry point for the automation service."""
+    if not API_KEY:
+        print("FATAL: API_KEY is mandatory and must be set.", file=sys.stderr)
+        sys.exit(1)
+    app.run(host="0.0.0.0", port=PORT)
+
+
+if __name__ == "__main__":
+    main()
