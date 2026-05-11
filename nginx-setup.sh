@@ -5,7 +5,7 @@
 # purpose: Setup nginx for the mid-term exam project
 # date: 2026-05-11
 ####################################################
-set -e
+set -euo pipefail
 
 readonly CONF_PATH="/etc/nginx/sites-available/status-dashboard"
 readonly ENABLED_PATH="/etc/nginx/sites-enabled/status-dashboard"
