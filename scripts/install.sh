@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-
-# ==============================================================================
-# Status Dashboard - Full Installation Script
-# Standard: Senior Automation Engineer - Main-First Structure
-# ==============================================================================
-
+####################################################
+# version: 1.0
+# created by: Bibi
+# purpose: Setup nginx for the mid-term exam project
+# date: 2026-05-11
+#####################################################
 set -euo pipefail
 
 readonly APP_NAME="status-dashboard"
