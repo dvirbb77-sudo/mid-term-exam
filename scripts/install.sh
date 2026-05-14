@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-####################################################
-# version: 1.0
-# created by: Bibi
-# purpose: Setup nginx for the mid-term exam project
-# date: 2026-05-11
-#####################################################
-set -euo pipefail
 
+# ==============================================================================
+# Status Dashboard - Full Installation Script
+# Standard: Senior Automation Engineer - Main-First Structure
+# ==============================================================================
+
+set -euo pipefail
 
 readonly APP_NAME="status-dashboard"
 readonly PORT=${PORT:-5000}
@@ -18,29 +17,47 @@ readonly NGINX_AVAIL="/etc/nginx/sites-available/status-dashboard"
 readonly NGINX_ENABL="/etc/nginx/sites-enabled/status-dashboard"
 readonly NGINX_DEFAULT="/etc/nginx/sites-enabled/default"
 
+function main() {
+    check_root
+    validate_env
+    
+    log "Starting installation of $APP_NAME v$VERSION..."
+    
+    setup_container
+    setup_nginx
 
-log() {
+    local ip_addr
+    ip_addr=$(hostname -I | awk '{print $1}')
+    
+    echo "--------------------------------------------------"
+    log "INSTALLATION COMPLETE"
+    log "Service reachable at: http://$ip_addr/"
+    echo "--------------------------------------------------"
+}
+
+
+function log() {
     echo -e "\033[1;32m[INFO]\033[0m $1"
 }
 
-error() {
+function error() {
     echo -e "\033[1;31m[ERROR]\033[0m $1" >&2
     exit 1
 }
 
-check_root() {
+function check_root() {
     if [[ $EUID -ne 0 ]]; then
         error "This script must be run as root. Please use: sudo ./install.sh"
     fi
 }
 
-validate_env() {
+function validate_env() {
     if [[ -z "$API_KEY" ]]; then
-        error "API_KEY is not set. Usage: API_KEY=secret123 sudo ./install.sh"
+        error "API_KEY is not set. Usage: API_KEY=secret123 sudo -E ./install.sh"
     fi
 }
 
-setup_container() {
+function setup_container() {
     log "Building Docker image: $APP_NAME..."
     docker build -t "$APP_NAME" .
 
@@ -58,7 +75,7 @@ setup_container() {
         "$APP_NAME"
 }
 
-setup_nginx() {
+function setup_nginx() {
     log "Configuring Nginx..."
 
     if [[ ! -f "$NGINX_SRC" ]]; then
@@ -77,24 +94,6 @@ setup_nginx() {
     else
         error "Nginx configuration validation failed."
     fi
-}
-
-main() {
-    check_root
-    validate_env
-    
-    log "Starting installation of $APP_NAME v$VERSION..."
-    
-    setup_container
-    setup_nginx
-
-    local ip_addr
-    ip_addr=$(hostname -I | awk '{print $1}')
-    
-    echo "--------------------------------------------------"
-    log "INSTALLATION COMPLETE"
-    log "Service reachable at: http://$ip_addr/"
-    echo "--------------------------------------------------"
 }
 
 main "$@"
