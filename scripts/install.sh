@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
-####################################################
-# version: 1.0
-# created by: Bibi
-# purpose: Setup nginx for the mid-term exam project
-# date: 2026-05-11
-#####################################################
-set -euo pipefail
 
+# ==============================================================================
+# Status Dashboard - Full Installation Script
+# Standard: POSIX logic with Bash extensions ([[)
+# ==============================================================================
+
+set -euo pipefail
 
 readonly APP_NAME="status-dashboard"
 readonly PORT=${PORT:-5000}
 readonly VERSION=${VERSION:-"1.1.0"}
-readonly API_KEY=${API_KEY:-""} 
+readonly API_KEY=${API_KEY:-""} # No default for security
 
 readonly NGINX_SRC="./nginx/status-dashboard.conf"
 readonly NGINX_AVAIL="/etc/nginx/sites-available/status-dashboard"
 readonly NGINX_ENABL="/etc/nginx/sites-enabled/status-dashboard"
 readonly NGINX_DEFAULT="/etc/nginx/sites-enabled/default"
-
 
 log() {
     echo -e "\033[1;32m[INFO]\033[0m $1"
