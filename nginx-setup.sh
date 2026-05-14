@@ -14,7 +14,6 @@ readonly DEFAULT_SITE="/etc/nginx/sites-enabled/default"
 deploy_nginx_config() {
     echo "Creating Nginx configuration..."
     
-    # Using sudo with tee to handle permissions within the script
     sudo tee "$CONF_PATH" > /dev/null <<EOF
 server {
     listen 80;
@@ -32,20 +31,15 @@ EOF
 }
 
 main() {
-    # 1. Remove default site if it exists
     if [[ -L "$DEFAULT_SITE" || -f "$DEFAULT_SITE" ]]; then
         echo "Disabling default Nginx site..."
         sudo rm -f "$DEFAULT_SITE"
     fi
-
-    # 2. Deploy configuration
     deploy_nginx_config
 
-    # 3. Enable site via symlink
     echo "Enabling status-dashboard site..."
     sudo ln -sf "$CONF_PATH" "$ENABLED_PATH"
 
-    # 4. Validate and Restart
     echo "Validating Nginx syntax..."
     if sudo nginx -t; then
         echo "Validation successful. Reloading Nginx..."
